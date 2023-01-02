@@ -1,3 +1,4 @@
+## This Notebook has been released under the Apache 2.0 open source license.
 import pandas as pd
 import numpy as np
 from tkinter import messagebox
