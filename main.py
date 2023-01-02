@@ -1,15 +1,15 @@
 import pandas as pd
 import numpy as np
+from tkinter import messagebox
+import sys 
+import urllib
+import urllib.request
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.metrics import f1_score, accuracy_score, confusion_matrix
 import seaborn as sns
 from tkinter import *
-from tkinter import messagebox
-import sys 
-import urllib
-import urllib.request
 
 
 # Reading files into program
@@ -27,8 +27,7 @@ training_set = pd.DataFrame(s, columns=training_set.columns)
 training_set = training_set.fillna(0)
 training_set.tail()
 
-# Note that earlier I mentioned that we have weighate against each symptom
-# So we will simply perform an encoding operation here against each symptom
+# Encoding to make it easier for machines to understand
 
 vals = training_set.values
 symptoms = symptom_set['Symptom'].unique()
@@ -38,16 +37,11 @@ for i in range(len(symptoms)):
     
 d = pd.DataFrame(vals, columns=cols)
 
-# Weightage of these three aren't available in our dataset-2 hence as of now we are ignoring
 d = d.replace('dischromic _patches', 0)
 d = d.replace('spotting_ urination',0)
 training_set = d.replace('foul_smell_of urine',0)
 
 training_set.head()
-
-# Now lets have a look at the different symptoms, we will need this list for option inputs in front-end
-#list of symptoms 
-
 
 # Can be referenced in front end web dev
 training_set['Disease'].unique()
@@ -55,33 +49,27 @@ training_set['Disease'].unique()
 data = training_set.iloc[:,1:].values
 data
 
-# Y in prediction in terms of (X,Y)
+# Prediction 
 labels = training_set['Disease'].values
 labels
 
-# After, we will train test split from the dataset 
+# Train test split
 x_train, x_test, y_train, y_test = train_test_split(data, labels, shuffle=True, train_size = 0.85)
 print(x_train.shape, x_test.shape, y_train.shape, y_test.shape)
 
-# The algorithm chosen is a support vector classifier machine.  They are a set of supervised machine learning methods.
-model = SVC() # An instance of that model class
+model = SVC() 
 
-# Start training the model now
+# Start training the model 
 model.fit(x_train, y_train)
 
 #x_test
 
 
-# Predicting using test data ::
+# Predicting 
 preds = model.predict(x_test)
 
 
-# Model Metrics (Accuracy and others) ::
-conf_mat = confusion_matrix(y_test, preds)
-training_set_cm = pd.DataFrame(conf_mat, index=training_set['Disease'].unique(), columns=training_set['Disease'].unique())
-print('F1-score% =', f1_score(y_test, preds, average='macro')*100, '|', 'Accuracy% =', accuracy_score(y_test, preds)*100)
-#sns.heatmap(training_set_cm)
 
-# Dump the data and save in to ".sav" file for use in ML based front-end applications (Optional)
+# We can save the data into a file for it to be used in ML based front-end application
 #import pickle
 #pickle.dump(pred_model,open("svc_ml_model.sav", "wb"))
